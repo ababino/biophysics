@@ -33,68 +33,6 @@ def HH(y, t, I0, t_in, t_end):
     dydt[3] = alpha_h * (1 - h) - beta_h * h
     return dydt
 
-def llinas(y, t, V):
-    Vm = V - 70
-    k10 = 2.0
-    k20 = 1.0
-    Z1 = 1.0
-    Z2 = 0.0
-    R = 0.025
-    k1 = k10 * np.exp(R * Z1 * Vm)
-    k2 = k20 * np.exp(R * Z2 * Vm)
-    dydt = k1 * (1 - y) - k2 * y
-    return dydt
-
-def current(O, V):
-    Vm = V - 70
-    PCa = 10**(-10)
-    Ci = 10**(-4)
-    Ce = 40
-    R = 0.025
-    j = PCa * Vm * (Ci -Ce * np.exp(-2 * R * Vm)) / (1 - np.exp(-2 * R * Vm))
-    ICa = (j * O**5) / 5
-    return ICa
-
-
-
-def  LR(x, t):
-    v =x[1]  # potencial de membrana
-    n =x[2]  # Subunidad n
-    Ca = x[3] # calcio
-
-    # Parametros
-    gKCa=0.02
-    gK=3
-    gCa=3.2
-    Kd=1
-    VK=-75
-    VCa=100
-    VL=-40
-    Cm=.5
-    gL=0.012
-    va=30
-    vp=50
-    f=0.007
-    kc=0.02
-    k1=0.0275
-
-    An=0.01*((10-(v+va))/(np.exp((10-(v+va))*0.1)-1))
-    Bn=0.125*np.exp(-(v+va)/80)
-    Am=0.1*((25-(v+vp))/(np.exp((25-(v+vp))*0.1)-1))
-    Bm=4*np.exp(-(v+vp)/18)
-    Ah=0.07*np.exp(-(v+vp)/20)
-    Bh=1/(1+np.exp((30-(v+vp))*0.1))
-
-    m_inf=Am/(Am+Bm)
-    h_inf=Ah/(Ah+Bh)
-
-    #ecuaiones
-    y[1] = -( gCa*m_inf^3*h_inf*(v-VCa) + (gK*n^4+gKCa*Ca/(Ca+Kd))*(v-VK) + gL*(v-VL)) / Cm
-    y[2] = An*(1-n)-Bn*n
-    y[3] = f*(-k1*gCa*m_inf^3*h_inf*(v-VCa)-kc*Ca)
-
-    #y = y'*1000
-    return y
 
 func = lambda y, t: HH(y, t, -5, 2, 4)
 y0 = np.array([0.000, 0.3177, 0.0530, 0.5959])
@@ -103,7 +41,7 @@ y = odeint(func, y0, time)
 pl.figure(1)
 pl.plot(time, y[:, 0])
 
-func = lambda y, t: HH(y + np.array([20, 0, 0, 0]), t, -5, 2, 4)
+func = lambda y, t: HH(y + np.array([6, 0, 0, 0]), t, -5, 2, 4)
 y0 = np.array([0.000, 0.3177, 0.0530, 0.5959])
 y = odeint(func, y0, time)
 pl.plot(time, y[:, 0])
