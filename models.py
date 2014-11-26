@@ -10,18 +10,12 @@ def cable(V, I=0):
     return dV
 
 
-def na_current(V, m, h):
+def HH(y, Vna=115, Vk=-12.0, Vl=10.6):
     gna = 120.0
-    Vna = 115.0
-    INa = gna * m**3 * h * (V - Vna)
-    return INa
-
-
-def HH(y):
     gk = 36.0
+    #Vk = -2.0#-12.0
     gl = 0.3
-    Vk = -12.0
-    Vl = 10.6
+    #Vl = -40.0#10.6
     Cm = 1.0
     dy = np.zeros_like(y)
     V = y[0]
@@ -34,7 +28,7 @@ def HH(y):
     beta_h = 1.0 / (1.0 + np.exp((30.0 - V) / 10.0))
     alpha_n = 0.01 * (10.0 - V) / (np.exp((10.0 - V) / 10.0) - 1.0)
     beta_n = 0.125 * np.exp(-V / 80.0)
-    INa = na_current(V, m, h)
+    INa = gna * m**3 * h * (V - Vna)
     IK = gk * n**4 * (V - Vk)
     IL = gl * (V - Vl)
     dy[0] = -(INa + IK + IL) / Cm
@@ -120,6 +114,15 @@ def nmda(y):
     dy[2] = -ru * C2 -rd * C2 +rr * D -r0 * C2 + rc * O
     dy[3] = r0 * C2 - rc * O
     return dy
+
+def ca_current(O, V):
+    Mg = 2.0
+    gNMDA = 1.0
+    VCa = 100.0
+    B = 1.0 / (1 + np.exp(-0.062 * V)*Mg/3.57)
+    ICa = gNMDA * B * O * (V - VCa)
+    return ICa
+
 
 def llinas(y, t, V):
     Vm = V - 70
