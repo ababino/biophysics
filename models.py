@@ -1,30 +1,43 @@
 import numpy as np
 
 
-def HH(y):
+def cable(V, I=0):
+    dV = np.zeros_like(V)
+    N = dV.shape[0]
+    dV[1:N-1] = V[:N-2] - 3 * V[1:N-1] + V[2:]
+    dV[0] = V[1] + dV[1] + I - V[0]
+    dV[N-1] = V[N-1] - V[N-2] - dV[N-2]
+    return dV
+
+
+def na_current(V, m, h):
     gna = 120.0
+    Vna = 115.0
+    INa = gna * m**3 * h * (V - Vna)
+    return INa
+
+
+def HH(y):
     gk = 36.0
     gl = 0.3
-    Vm = -65.0
-    Vna = 115.0 #+ Vm
-    Vk = -12.0 #+ Vm
-    Vl = 10.6 #+ Vm
+    Vk = -12.0
+    Vl = 10.6
     Cm = 1.0
     dy = np.zeros_like(y)
-    V = y[0] - Vm
+    V = y[0]
     n = y[1]
     m = y[2]
     h = y[3]
     alpha_m = 0.1 * (25.0 - V) / (np.exp((25.0 - V) / 10.0) - 1.0)
     beta_m = 4.0 * np.exp(-V / 18.0)
     alpha_h = 0.07 * np.exp(-V / 20.0)
-    beta_h = 1.0 / (1.0 + np.exp((30.0 -V) / 10.0))
+    beta_h = 1.0 / (1.0 + np.exp((30.0 - V) / 10.0))
     alpha_n = 0.01 * (10.0 - V) / (np.exp((10.0 - V) / 10.0) - 1.0)
     beta_n = 0.125 * np.exp(-V / 80.0)
-    INa = gna * m**3 * h * (V - Vna)
+    INa = na_current(V, m, h)
     IK = gk * n**4 * (V - Vk)
     IL = gl * (V - Vl)
-    dy[0] = -(INa + IK + IL)/ Cm
+    dy[0] = -(INa + IK + IL) / Cm
     dy[1] = alpha_n * (1 - n) - beta_n * n
     dy[2] = alpha_m * (1 - m) - beta_m * m
     dy[3] = alpha_h * (1 - h) - beta_h * h
