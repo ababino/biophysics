@@ -111,9 +111,10 @@ def nmda(y):
     dy = np.zeros_like(y)
     dy[0] = ru * C1
     dy[1] = -ru * C1 + ru * C2
-    dy[2] = -ru * C2 -rd * C2 +rr * D -r0 * C2 + rc * O
+    dy[2] = -ru * C2 - rd * C2 + rr * D - r0 * C2 + rc * O
     dy[3] = r0 * C2 - rc * O
     return dy
+
 
 def ca_current(O, V):
     Mg = 2.0
